@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\User;
-use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cookie;
@@ -118,6 +117,10 @@ class CustomGuard implements StatefulGuard
      */
     public function logout(): void
     {
+        $hasRememberMe = $this->hasValidRememberMeCookie();
+        if ($hasRememberMe['state']) {
+            Cookie::queue(Cookie::forget(config('app.name') . '_remember_me'));
+        }
         $this->session->invalidate();
         $this->session->regenerateToken();
         $this->user = null;
