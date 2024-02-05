@@ -58,9 +58,9 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        $createActivity->execute($user, $user, 'REGISTER', []);
-
         Auth::login($user);
+
+        $createActivity->execute($user, $user, 'REGISTER', []);
 
         return $this->returnJson(true, ['message' => 'Account created'], 201);
     }

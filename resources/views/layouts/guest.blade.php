@@ -93,7 +93,6 @@
                     Alpine.store('toast').toggle(false, json.message);
                     return;
                 }
-                console.log('User Authenticated')
                 await new Promise((res) => setTimeout(() => res(), 500))
                 return window.location.href = route('dashboard')
             },

@@ -2,8 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Contracts\Auth\Authenticatable;
 
@@ -37,6 +40,13 @@ class CustomGuard implements StatefulGuard
         }
 
         $this->login($validation['user']);
+
+        $rememberMe = $remember ?? false;
+
+        if ($rememberMe) {
+            $this->setRememberMe();
+        }
+
         return true;
     }
 
@@ -60,6 +70,7 @@ class CustomGuard implements StatefulGuard
     public function login(Authenticatable $user, $remember = false): void
     {
         $this->session->put($this->prefix . 'user_id', $user->id);
+        $this->session->put($this->prefix . 'via_remember_me', false);
         $this->user = $user;
         event(new Login($this->name, $this->user, $remember));
         $this->session->regenerate();
@@ -74,8 +85,12 @@ class CustomGuard implements StatefulGuard
      */
     public function loginUsingId($id, $remember = false)
     {
-        dd('to do - loginusingid');
-        return false;
+        $user = User::find($id);
+        $this->session->put($this->prefix . 'user_id', $user->id);
+        $this->session->put($this->prefix . 'via_remember_me', true);
+        $this->user = $user;
+        event(new Login($this->name, $this->user, true));
+        return true;
     }
 
     /**
@@ -95,8 +110,7 @@ class CustomGuard implements StatefulGuard
      */
     public function viaRemember(): bool
     {
-        dd('to do - viaremember');
-        return false;
+        return $this->session->get($this->prefix . 'via_remember_me', fn () => false);
     }
 
     /**
@@ -183,8 +197,7 @@ class CustomGuard implements StatefulGuard
      */
     public function hasUser(): bool
     {
-        dd('to do - hasUser');
-        return false;
+        return $this->user ? true : false;
     }
 
     /**
@@ -196,5 +209,36 @@ class CustomGuard implements StatefulGuard
     {
         dd('to do - setUser');
         return;
+    }
+
+    /**
+     * 
+     */
+    private function setRememberMe(): void
+    {
+        $token = $this->user()->email;
+        $duration = 60 * 24 * 365;
+        $name = config('app.name') . '_remember_me';
+        Cookie::queue($name, $token, $duration);
+
+        /** @var User $user */
+        $user = $this->user();
+        $user->remember_token = $token;
+        $user->save();
+    }
+
+    /**
+     * 
+     */
+    public function hasValidRememberMeCookie(): array
+    {
+        $rememberCookie = Cookie::get(config('app.name') . '_remember_me', false);
+        if ($rememberCookie) {
+            $user = User::where('email', $rememberCookie)->first();
+            if ($user) {
+                return ['user' => $user, 'state' => true];
+            }
+        }
+        return ['user' => null, 'state' => false];
     }
 }

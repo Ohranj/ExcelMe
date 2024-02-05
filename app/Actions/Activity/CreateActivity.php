@@ -3,10 +3,11 @@
 namespace App\Actions\Activity;
 
 use App\Models\Activity;
+use Illuminate\Database\Eloquent\Model;
 
 class CreateActivity
 {
-    public function execute($assetable, $actionable, string $reference, array $meta): void
+    public function execute(Model $assetable, Model $actionable, string $reference, array $meta): void
     {
         $activity = new Activity();
         $activity->assetable()->associate($assetable);
