@@ -113,7 +113,8 @@
                     Alpine.store('toast').toggle(false, json.message);
                     return;
                 }
-                console.log(json);
+                this.modal.signup.show = false;
+                await new Promise((res) => setTimeout(() => res(), 750))
                 //Redirect to auth dashboard
             },
             ...e

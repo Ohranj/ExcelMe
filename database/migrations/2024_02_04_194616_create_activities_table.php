@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('activity');
             $table->morphs('assetable');
             $table->morphs('actionable');
-            $table->json('meta_data');
+            $table->json('meta_data')->nullable();
             $table->timestamps();
         });
     }

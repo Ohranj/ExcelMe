@@ -10,14 +10,17 @@ class Activity extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['assetable', 'actionable', 'activity', 'meta_data'];
+
     const activityMap = [
-        'LOGIN' => 'Login Success'
+        'LOGIN' => 'Login Success',
+        'REGISTER' => 'User Registered'
     ];
 
     /**
      * Relations
      */
-    public function actionerable(): MorphTo
+    public function actionable(): MorphTo
     {
         return $this->morphTo();
     }
