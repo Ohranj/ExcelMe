@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    volumes:
+      - ./:/var/www
+    ports:
+      - 5173:5173
+  nginx:
+    image: nginx:latest
+    restart: unless-stopped
+    container_name: 'web_server'
+    volumes:
+      - ./:/var/www
+      - ./docker-configs/nginx:/etc/nginx/conf.d
+    ports:
+      - 80:80
