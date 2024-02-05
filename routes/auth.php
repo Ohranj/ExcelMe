@@ -8,6 +8,8 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
+    Route::get('/', fn () => view('welcome'))->name('welcome');
+
     Route::resource('register', RegisteredUserController::class)->only('store');
     Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
 

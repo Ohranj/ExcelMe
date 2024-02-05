@@ -94,7 +94,8 @@
                     return;
                 }
                 console.log('User Authenticated')
-                //Redirect to auth dashboard
+                await new Promise((res) => setTimeout(() => res(), 500))
+                return window.location.href = route('dashboard')
             },
             async registerBtnPressed() {
                 const response = await fetch(route('register.store'), {
@@ -113,9 +114,9 @@
                     Alpine.store('toast').toggle(false, json.message);
                     return;
                 }
-                this.modal.signup.show = false;
-                await new Promise((res) => setTimeout(() => res(), 750))
-                //Redirect to auth dashboard
+                this.modals.signup.show = false;
+                await new Promise((res) => setTimeout(() => res(), 500))
+                return window.location.href = route('dashboard')
             },
             ...e
         })

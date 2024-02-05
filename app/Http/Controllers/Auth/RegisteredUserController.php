@@ -4,13 +4,15 @@ namespace App\Http\Controllers\Auth;
 
 use Exception;
 use App\Models\User;
-use App\Models\Activity;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Actions\Captain\CreateCaptain;
 use Illuminate\Auth\Events\Registered;
+use App\Actions\Activity\CreateActivity;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Actions\Organisation\CreateOrganisation;
 
@@ -23,7 +25,7 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(RegisterRequest $request, CreateOrganisation $createOrganisation, CreateCaptain $createCaptain): JsonResponse
+    public function store(RegisterRequest $request, CreateOrganisation $createOrganisation, CreateCaptain $createCaptain, CreateActivity $createActivity): JsonResponse
     {
         $params = [...$request->all()];
 
@@ -44,25 +46,21 @@ class RegisteredUserController extends Controller
             if ($setOrganisation) {
                 $createCaptain->execute($user);
             }
-
-            event(new Registered($user));
         } catch (Exception $e) {
+            Log::info(json_encode($e));
             DB::rollback();
             return $this->returnJson(false, [
-                'message' => 'An occured on. If this persists, please contact our team.'
+                'message' => 'An error occured. If this persists, please contact our team.'
             ], 422);
         }
 
         DB::commit();
 
-        $activity = new Activity();
-        $activity->assetable()->associate($user);
-        $activity->actionable()->associate($user);
-        $activity->activity = 'REGISTER';
-        $activity->meta_data = json_encode('[]');
-        $activity->save();
+        event(new Registered($user));
 
-        // Auth::login($user);
+        $createActivity->execute($user, $user, 'REGISTER', []);
+
+        Auth::login($user);
 
         return $this->returnJson(true, ['message' => 'Account created'], 201);
     }

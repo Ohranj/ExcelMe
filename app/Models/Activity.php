@@ -10,7 +10,9 @@ class Activity extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['assetable', 'actionable', 'activity', 'meta_data'];
+    protected $casts = [
+        'meta_data' => 'array',
+    ];
 
     const activityMap = [
         'LOGIN' => 'Login Success',
