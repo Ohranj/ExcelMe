@@ -2,9 +2,9 @@ name: First pipeline
 
 on:
   push:
-    branches: [ "action" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "action" ]
+    branches: [ "main" ]
 jobs:
   tests:
     runs-on: ubuntu-latest
