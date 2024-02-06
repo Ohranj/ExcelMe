@@ -54,8 +54,11 @@
                     </div>
                     <input type="text" placeholder="organisation name..." x-model="register.builder.organisation" class="rounded-md p-1 text-sm shadow-sm shadow-primary-500" @input="register.builder.create_organisation = register.builder.organisation.length >= 1" />
                 </div>
-                <button class="bg-primary-500 hover:bg-primary-900 text-white py-0.5 rounded-md w-[150px] self-end my-6 font-medium" @click="registerBtnPressed">Create Account</button>
-                <small @click="modals.signup.show = false; $refs.login_email_input.focus()" class="text-center hover:underline underline-offset-2 decoration-2 cursor-pointer">Already have an account?</small>
+                <button x-cloak x-show="!modals.signup.processing" class="bg-primary-500 hover:bg-primary-900 text-white py-0.5 rounded-md w-[150px] self-end my-6 font-medium" @click="registerBtnPressed">Create Account</button>
+                <template x-if="modals.signup.processing">
+                    <x-svg.spinner class="mx-auto w-8 h-8 animate-spin text-amber-500" fill="none" />
+                </template>
+                <small @click="modals.signup.show = false; $refs.login_email_input.focus(); $refs.login_email_input_mob.focus()" class="text-center hover:underline underline-offset-2 decoration-2 cursor-pointer">Already have an account?</small>
             </div>
         </x-slot:content>
     </x-modal>
@@ -64,7 +67,8 @@
         const guest = (e) => ({
             modals: {
                 signup: {
-                    show: false
+                    show: false,
+                    processing: false
                 },
             },
             login: {
@@ -94,6 +98,7 @@
                 return window.location.href = route('dashboard')
             },
             async registerBtnPressed() {
+                this.modals.signup.processing = true;
                 const response = await fetch(route('register.store'), {
                     method: 'post',
                     body: JSON.stringify({
@@ -108,10 +113,10 @@
                 const json = await response.json();
                 if (!response.ok) {
                     Alpine.store('toast').toggle(false, json.message);
+                    this.modals.signup.processing = false;
                     return;
                 }
-                this.modals.signup.show = false;
-                await new Promise((res) => setTimeout(() => res(), 350))
+                await new Promise((res) => setTimeout(() => res(), 500))
                 return window.location.href = route('dashboard')
             },
             ...e

@@ -25,7 +25,7 @@
         </div>
     </div>
     <div class="grid sm:grid-cols-5 md:grid-cols-7 xl:hidden items-center gap-2 relative">
-        <input type="email" class="sm:col-span-2 md:col-span-4 rounded-md p-1 text-sm shadow-sm shadow-primary-500" placeholder="email address..." x-ref="login_email_input" x-model="login.builder.email" />
+        <input type="email" class="sm:col-span-2 md:col-span-4 rounded-md p-1 text-sm shadow-sm shadow-primary-500" placeholder="email address..." x-ref="login_email_input_mob" x-model="login.builder.email" />
         <input type="password" class="sm:col-span-2 md:col-span-2 rounded-md p-1 text-sm shadow-sm shadow-primary-500" placeholder="password..." x-model="login.builder.password" />
         <button class="hover:bg-primary-900 text-white bg-primary-500 py-0.5 px-2 rounded-md mt-10 sm:mt-0" @click="logInBtnPressed">Log in</button>
         <div class="absolute top-20 sm:top-9">
@@ -33,6 +33,4 @@
             <small>Remember Me</small>
         </div>
     </div>
-
-
 </div>
