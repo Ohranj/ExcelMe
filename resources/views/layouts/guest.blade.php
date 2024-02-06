@@ -62,9 +62,6 @@
 
     <script>
         const guest = (e) => ({
-            nav: {
-                showDropdown: false
-            },
             modals: {
                 signup: {
                     show: false
@@ -93,7 +90,7 @@
                     Alpine.store('toast').toggle(false, json.message);
                     return;
                 }
-                await new Promise((res) => setTimeout(() => res(), 500))
+                await new Promise((res) => setTimeout(() => res(), 350))
                 return window.location.href = route('dashboard')
             },
             async registerBtnPressed() {
@@ -114,7 +111,7 @@
                     return;
                 }
                 this.modals.signup.show = false;
-                await new Promise((res) => setTimeout(() => res(), 500))
+                await new Promise((res) => setTimeout(() => res(), 350))
                 return window.location.href = route('dashboard')
             },
             ...e
