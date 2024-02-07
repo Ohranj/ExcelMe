@@ -1,4 +1,7 @@
-# ExcelMe
+[www.xlmeapp.com](https://www.xlmeapp.com/)
+
+
+# xlme
 
 A project that allows you to collab, discover and manage your datasets
 
@@ -6,7 +9,7 @@ A project that allows you to collab, discover and manage your datasets
  - Built with Laravel
  - Docker
  - MQTT
- - AWS
+ - AWS: Hosting
 
 
 ### Running Locally
