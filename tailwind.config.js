@@ -15,7 +15,8 @@ export default {
                 sans: ['Poppins', ...defaultTheme.fontFamily.sans],
             },
             colors: {
-                primary: colors.slate
+                primary: colors.slate,
+                secondary: colors.amber
             }
         },
         

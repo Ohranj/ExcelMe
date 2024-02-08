@@ -17,9 +17,10 @@
             </form>
         </div>
     </div>
-    <div x-cloak x-show="nav.showDropdown" x-collapse class="relative bg-primary-300 top-2 w-full rounded-md" @click.away="nav.showDropdown = false">
+    <div x-cloak x-show="nav.showDropdown" x-collapse class="xl:hidden relative bg-primary-300 top-2 w-full rounded-md" @click.away="nav.showDropdown = false">
         <ul class="p-4">
-            <li>Log out</li>
+            <li class="p-1 mb-2">My Account</li>
+            <li class="p-1">Log out</li>
         </ul>
     </div>
 </div>

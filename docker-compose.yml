@@ -19,3 +19,16 @@ services:
       - ./docker-configs/nginx:/etc/nginx/conf.d
     ports:
       - 80:80
+  db:
+    image: mysql:8.3.0
+    restart: unless-stopped
+    container_name: db
+    volumes:
+      - ./docker-configs/mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    ports:
+      - 3306:3306
