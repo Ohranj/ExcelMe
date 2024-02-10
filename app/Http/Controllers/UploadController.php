@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Upload\CreateUpload;
-use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
+use App\Http\Requests\UploadFile;
+use Illuminate\Http\JsonResponse;
+use App\Actions\Upload\CreateUpload;
 use Illuminate\Support\Facades\Auth;
 use App\Interfaces\FileUploadInterface;
 
@@ -12,17 +13,15 @@ class UploadController extends Controller
 {
     use ResponseTrait;
 
-    public function store(Request $request, FileUploadInterface $fileUpload, CreateUpload $createUpload)
+    public function store(UploadFile $request, FileUploadInterface $fileUpload, CreateUpload $createUpload): JsonResponse
     {
-        //Validate size and type - move to request class
+        $files = $request->safe()->uploads;
 
-
-        $fileInserts = [];
+        $filesStoredToDisk = [];
         $errors = [];
-        foreach ($request->uploads as $file) {
-            $safeName =   $file->name = explode('.', $file->hashName())[0];
+        foreach ($files as $file) {
             $extension = $file->extension();
-            $filePath = $safeName . '.' . $extension;
+            $filePath = explode('.', $file->hashName())[0] . '.' . $extension;
 
             $params = [
                 'client_name' => $file->getClientOriginalName(),
@@ -40,21 +39,29 @@ class UploadController extends Controller
                 continue;
             }
 
-            $fileInserts[] = $params;
+            $filesStoredToDisk[] = $params;
         }
 
-        $insertWasSuccess = $createUpload->execute($fileInserts);
+        $insertWasSuccess = $createUpload->execute($filesStoredToDisk);
 
         if (!$insertWasSuccess) {
-            foreach ($fileInserts as $insert) {
+            foreach ($filesStoredToDisk as $insert) {
                 $fileUpload->delete($insert['path']);
             }
-
-            $data = ['message' => 'An error occured on upload. Please check and try again.'];
+            $data = ['message' => 'An error occured on upload. Please check and try again.', 'errors' => null];
             return $this->returnJson(false, $data, 422);
         }
 
-        $data = ['message' => 'Files uploaded',  'errors' => $errors];
+        $data = [
+            'message' => 'Files uploaded',
+            'errors' => [
+                'files' => $errors,
+                'message' => count($errors)
+                    ? 'We failed to upload all of your files left. If this persists, please contact our team.'
+                    : null
+            ]
+        ];
+
         return $this->returnJson(true, $data, 201);
     }
 }

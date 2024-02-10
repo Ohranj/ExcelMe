@@ -19,10 +19,11 @@
                             <small>Click to browse</small>
                         </div>
                     </div>
+                    <small class="text-red-500 font-medium text-center" x-cloak x-show="slides.sheets.error.show" x-text="slides.sheets.error.message"></small>
                     <div x-cloak x-show="slides.sheets.toUpload.length">
                         <h1 class="font-medium mb-2">Selected Files</h1>
                         <div class="flex flex-col gap-2">
-                            <template x-for="file of slides.sheets.toUpload">
+                            <template x-for="(file, indx) in slides.sheets.toUpload" :key="file.name">
                                 <div class="border border-primary-200 shadow shadow-primary-500 rounded-md p-4 flex items-center bg-primary-50">
                                     <div class="flex flex-col gap-1 grow">
                                         <small class="font-medium" x-text="file.name"></small>
@@ -44,7 +45,11 @@
             slides: {
                 sheets: {
                     show: false,
-                    toUpload: []
+                    toUpload: [],
+                    error: {
+                        show: false,
+                        message: ''
+                    }
                 }
             },
             onFilesAdded(el) {
@@ -59,6 +64,7 @@
                 }
             },
             async confirmUploadsBtnPressed() {
+                this.slides.sheets.error.show = false;
                 const formData = new FormData();
                 for (const upload of this.slides.sheets.toUpload) {
                     formData.append('uploads[]', upload);
@@ -76,8 +82,20 @@
                     Alpine.store('toast').toggle(false, json.message);
                     return;
                 }
+
+                for (let i = this.slides.sheets.toUpload.length - 1; i >= 0; i--) {
+                    const file = this.slides.sheets.toUpload[i];
+                    const item = json.errors.files.findIndex((x) => x == file.name);
+                    if (item < 0) {
+                        this.slides.sheets.toUpload.splice(i, 1);
+                    }
+                }
+
+                if (json.errors.files.length) {
+                    this.slides.sheets.error.message = json.errors.message;
+                    this.slides.sheets.error.show = true;
+                }
                 Alpine.store('toast').toggle(true, json.message);
-                console.log(json);
             },
             ...e
         })
