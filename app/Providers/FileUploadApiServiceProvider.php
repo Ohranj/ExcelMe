@@ -3,9 +3,9 @@
 namespace App\Providers;
 
 use App\Interfaces\FileUploadInterface;
-use App\Services\Uploads\FileUploadAWS;
+use App\Services\Uploads\FileHandleAWS;
 use Illuminate\Support\ServiceProvider;
-use App\Services\Uploads\FileUploadLocal;
+use App\Services\Uploads\FileHandleLocal;
 
 class FileUploadApiServiceProvider extends ServiceProvider
 {
@@ -16,8 +16,8 @@ class FileUploadApiServiceProvider extends ServiceProvider
     {
         $this->app->bind(FileUploadInterface::class, fn () =>
         match (config('filesystems.default')) {
-            'local' => new FileUploadLocal(),
-            's3' => new FileUploadAWS(),
+            'private' => new FileHandleLocal(),
+            's3' => new FileHandleAWS(),
             default => null
         });
     }

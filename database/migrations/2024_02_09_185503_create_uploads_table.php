@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('uploads', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->string('name');
+            $table->string('client_name');
             $table->string('extension');
             $table->string('path');
             $table->timestamps();

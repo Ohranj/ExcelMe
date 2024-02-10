@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Upload;
+use App\Actions\Upload\CreateUpload;
 use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
 use Illuminate\Support\Facades\Auth;
@@ -12,36 +12,49 @@ class UploadController extends Controller
 {
     use ResponseTrait;
 
-    public function store(Request $request, FileUploadInterface $fileUpload)
+    public function store(Request $request, FileUploadInterface $fileUpload, CreateUpload $createUpload)
     {
-        //Validate
+        //Validate size and type - move to request class
 
 
         $fileInserts = [];
         $errors = [];
         foreach ($request->uploads as $file) {
+            $safeName =   $file->name = explode('.', $file->hashName())[0];
+            $extension = $file->extension();
+            $filePath = $safeName . '.' . $extension;
+
             $params = [
-                'name' => explode('.', $file->hashName())[0],
-                'extension' => $file->extension(),
+                'client_name' => $file->getClientOriginalName(),
+                'path' => $filePath,
+                'extension' => $extension,
                 'user_id' => Auth::id(),
                 'created_at' => now(),
                 'updated_at' => now()
             ];
-            $params['path'] = $fileUpload->upload();
+
+            $fileStored = $fileUpload->store($filePath, $file);
+
+            if (!$fileStored) {
+                array_push($errors, $params['client_name']);
+                continue;
+            }
+
             $fileInserts[] = $params;
         }
 
+        $insertWasSuccess = $createUpload->execute($fileInserts);
 
-        Upload::insert($fileInserts);
+        if (!$insertWasSuccess) {
+            foreach ($fileInserts as $insert) {
+                $fileUpload->delete($insert['path']);
+            }
 
+            $data = ['message' => 'An error occured on upload. Please check and try again.'];
+            return $this->returnJson(false, $data, 422);
+        }
 
-
-
-        //Add DB transaction - If 1 fails, fail all
-        $data = [
-            'message' => 'Files uploaded'
-        ];
-
+        $data = ['message' => 'Files uploaded',  'errors' => $errors];
         return $this->returnJson(true, $data, 201);
     }
 }

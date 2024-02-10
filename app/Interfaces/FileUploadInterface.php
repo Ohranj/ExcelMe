@@ -4,5 +4,6 @@ namespace App\Interfaces;
 
 interface FileUploadInterface
 {
-    public function upload(): string;
+    public function store($path, $file): bool;
+    public function delete($path): bool;
 }
