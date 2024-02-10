@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cookie;
@@ -219,7 +220,7 @@ class CustomGuard implements StatefulGuard
      */
     private function setRememberMe(): void
     {
-        $token = $this->user()->email;
+        $token = Str::random(16);
         $duration = 60 * 24 * 365;
         $name = config('app.name') . '_remember_me';
         Cookie::queue($name, $token, $duration);
@@ -237,7 +238,7 @@ class CustomGuard implements StatefulGuard
     {
         $rememberCookie = Cookie::get(config('app.name') . '_remember_me', false);
         if ($rememberCookie) {
-            $user = User::where('email', $rememberCookie)->first();
+            $user = User::where('remember_token', $rememberCookie)->first();
             if ($user) {
                 return ['user' => $user, 'state' => true];
             }
