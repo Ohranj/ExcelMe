@@ -23,13 +23,13 @@
                     <div x-cloak x-show="slides.sheets.toUpload.length">
                         <h1 class="font-medium mb-2">Selected Files</h1>
                         <div class="flex flex-col gap-2">
-                            <template x-for="(file, indx) in slides.sheets.toUpload" :key="file.name">
+                            <template x-for="(file, indx) in slides.sheets.toUpload" :key="indx">
                                 <div class="border border-primary-200 shadow shadow-primary-500 rounded-md p-4 flex items-center bg-primary-50">
                                     <div class="flex flex-col gap-1 grow">
                                         <small class="font-medium" x-text="file.name"></small>
                                         <small x-text="file.humanSize"></small>
                                     </div>
-                                    <x-svg.cross stroke-width="1.5" stroke="#FFFFFF" class="w-8 h-8 bg-red-500 rounded-full cursor-pointer" fill="none" />
+                                    <x-svg.cross stroke-width="1.5" stroke="#FFFFFF" class="w-8 h-8 bg-red-500 rounded-full cursor-pointer" fill="none" @click="slides.sheets.toUpload.splice(indx, 1)" />
                                 </div>
                             </template>
                         </div>
