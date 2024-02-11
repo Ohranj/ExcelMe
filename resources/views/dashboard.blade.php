@@ -1,7 +1,39 @@
 <x-app-layout>
-    <div class="flex flex-col gap-8" x-data="dashboard({ csrfToken: '{{ csrf_token() }}' })">
+    <div class="flex flex-col gap-12" x-data="dashboard({ csrfToken: '{{ csrf_token() }}' })">
         <button class="hover:bg-primary-900 text-white font-medium bg-primary-500 min-w-[125px] py-0.5 px-2 rounded-md ml-auto block" @click="slides.sheets.show = true">Upload</button>
-        <h1>Recent Files</h1>
+
+        <div>
+            <div class="flex items-center gap-8">
+                <small class="grow text-primary-600 flex items-center gap-1 relative">Filter: <span class="cursor-pointer text-primary-900" @click="files.params.filter.show = true">All Sheets</span>
+                    <x-svg.chevron fill="none" stroke-width="2.5" stroke="currentColor" class="w-3 h-3" />
+                    <div x-cloak x-show="files.params.filter.show" x-collapse class="bg-primary-700 rounded absolute top-6 min-w-[150px]" @click.away="files.params.filter.show = false">
+                        <ul class="flex flex-col gap-1 text-primary-200 p-4">
+                            <li>My sheets</li>
+                            <li>My Organisation</li>
+                            <li class="mt-2">All sheets</li>
+                        </ul>
+                    </div>
+                </small>
+                <small class="text-primary-600 flex items-center gap-1 relative">Sort: <span class="cursor-pointer text-primary-900" @click="files.params.sort.show = true">Last Modified</span>
+                    <x-svg.chevron fill="none" stroke-width="2.5" stroke="currentColor" class="w-3 h-3" />
+                    <div x-cloak x-show="files.params.sort.show" x-collapse class="bg-primary-700 rounded absolute top-6 min-w-[150px]" @click.away="files.params.sort.show = false">
+                        <ul class="flex flex-col gap-1 text-primary-200 p-4">
+                            <li>Alphabetical</li>
+                            <li>Date created</li>
+                            <li class="mt-2">Last modified</li>
+                        </ul>
+                    </div>
+                </small>
+                <small class="flex items-center gap-1">
+                    <x-svg.card-layout fill="none" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 cursor-pointer" />
+                    <x-svg.card-layout fill="none" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 cursor-pointer" />
+                </small>
+            </div>
+            <div class="mt-4">
+                here
+            </div>
+        </div>
+
 
         <x-modal showVar="slides.sheets.show" title="Upload your new sheets">
             <x-slot:content>
@@ -42,6 +74,20 @@
 
     <script>
         const dashboard = (e) => ({
+            files: {
+                list: [],
+                params: {
+                    filter: {
+                        show: false,
+                        value: 'all'
+                    },
+                    sort: {
+                        show: false,
+                        value: 'modified',
+                        asc: true
+                    }
+                }
+            },
             slides: {
                 sheets: {
                     show: false,
@@ -51,6 +97,14 @@
                         message: ''
                     }
                 }
+            },
+            init() {
+                this.retrieveUploadedFiles();
+            },
+            async retrieveUploadedFiles() {
+                const response = await fetch(route('uploads.index'));
+                const json = await response.json();
+                this.files.list = json.data;
             },
             onFilesAdded(el) {
                 for (const file of el.files) {
