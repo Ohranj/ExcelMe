@@ -6,6 +6,7 @@ use App\Models\Upload;
 use App\Traits\ResponseTrait;
 use App\Http\Requests\UploadFile;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use App\Actions\Upload\CreateUpload;
 use Illuminate\Support\Facades\Auth;
 use App\Interfaces\FileUploadInterface;
@@ -17,10 +18,10 @@ class UploadController extends Controller
     /**
      * 
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $user = Auth::user();
-        $files = Upload::whereBelongsTo($user)->get();
+        $files = Upload::whereBelongsTo($user)->orderBy('updated_at', $request->sortAsc ? 'asc' : 'desc')->get();
         $data = ['message' => 'Files retrieved', 'data' => $files];
         return $this->returnJson(true, $data, 200);
     }

@@ -1,26 +1,51 @@
 <x-app-layout>
     <div class="flex flex-col gap-12" x-data="dashboard({ csrfToken: '{{ csrf_token() }}' })">
         <button class="hover:bg-primary-900 text-white font-medium bg-primary-500 min-w-[125px] py-0.5 px-2 rounded-md ml-auto block" @click="slides.sheets.show = true">Upload</button>
-
         <div>
             <div class="flex items-center gap-8">
-                <small class="grow text-primary-600 flex items-center gap-1 relative">Filter: <span class="cursor-pointer text-primary-900" @click="files.params.filter.show = true">All Sheets</span>
+                <small class="grow text-primary-600 flex items-center gap-1 relative">Filter: <span class="cursor-pointer text-primary-900" @click="sheets.params.filter.show = true">All Sheets</span>
                     <x-svg.chevron fill="none" stroke-width="2.5" stroke="currentColor" class="w-3 h-3" />
-                    <div x-cloak x-show="files.params.filter.show" x-collapse class="bg-primary-700 rounded absolute top-6 min-w-[150px]" @click.away="files.params.filter.show = false">
-                        <ul class="flex flex-col gap-1 text-primary-200 p-4">
-                            <li>My sheets</li>
-                            <li>My Organisation</li>
-                            <li class="mt-2">All sheets</li>
+                    <div x-cloak x-show="sheets.params.filter.show" x-collapse class="bg-primary-700 rounded absolute top-6 min-w-[175px]" @click.away="sheets.params.filter.show = false">
+                        <small class="px-5 text-primary-400 font-medium mt-4 block">Sort by</small>
+                        <ul class="flex flex-col gap-1 text-primary-200 px-4 pb-4">
+                            <li class="hover:bg-amber-600 px-1 py-0.5 rounded cursor-pointer flex items-center gap-1" @click="sheets.params.filter.org = false; retrieveUploadedSheets()">
+                                <x-svg.tick stroke-width="2.0" stroke="#FFFFFF" class="w-3 h-3" ::class="{'opacity-0': sheets.params.filter.org}" fill="none" />My sheets
+                            </li>
+                            <li class="hover:bg-amber-600 px-1 py-0.5 rounded cursor-pointer flex items-center gap-1" @click="sheets.params.filter.org = true; retrieveUploadedSheets()">
+                                <x-svg.tick stroke-width="2.0" stroke="#FFFFFF" class="w-3 h-3" ::class="{'opacity-0': !sheets.params.filter.org}" fill="none" />
+                                My Organisation
+                            </li>
                         </ul>
                     </div>
                 </small>
-                <small class="text-primary-600 flex items-center gap-1 relative">Sort: <span class="cursor-pointer text-primary-900" @click="files.params.sort.show = true">Last Modified</span>
+                <small class="text-primary-600 flex items-center gap-1 relative">Sort: <span class="cursor-pointer text-primary-900" @click="sheets.params.sort.show = true">Date uploaded</span>
                     <x-svg.chevron fill="none" stroke-width="2.5" stroke="currentColor" class="w-3 h-3" />
-                    <div x-cloak x-show="files.params.sort.show" x-collapse class="bg-primary-700 rounded absolute top-6 min-w-[150px]" @click.away="files.params.sort.show = false">
-                        <ul class="flex flex-col gap-1 text-primary-200 p-4">
-                            <li>Alphabetical</li>
-                            <li>Date created</li>
-                            <li class="mt-2">Last modified</li>
+                    <div x-cloak x-show="sheets.params.sort.show" x-collapse class="bg-primary-700 rounded absolute top-6 min-w-[175px]" @click.away="sheets.params.sort.show = false">
+                        <small class="px-5 text-primary-400 font-medium mt-4 block">Sort by</small>
+                        <ul class="flex flex-col gap-1 text-primary-200 px-4 pb-4">
+                            <li class="hover:bg-amber-600 px-1 py-0.5 rounded cursor-pointer flex items-center gap-1" @click="sheets.params.sort.value = 'alphabetical'; retrieveUploadedSheets()">
+                                <x-svg.tick stroke-width="2.0" stroke="#FFFFFF" class="w-3 h-3" ::class="{'opacity-0': sheets.params.sort.value != 'alphabetical'}" fill="none" />
+                                Alphabetical
+                            </li>
+                            <li class="hover:bg-amber-600 px-1 py-0.5 rounded cursor-pointer flex items-center gap-1" @click="sheets.params.sort.value = 'uploaded'; retrieveUploadedSheets()">
+                                <x-svg.tick stroke-width="2.0" stroke="#FFFFFF" class="w-3 h-3" ::class="{'opacity-0': sheets.params.sort.value != 'uploaded'}" fill="none" />
+                                Date uploaded
+                            </li>
+                            <li class="hover:bg-amber-600 px-1 py-0.5 rounded cursor-pointer flex items-center gap-1" @click="sheets.params.sort.value = 'size'; retrieveUploadedSheets()">
+                                <x-svg.tick stroke-width="2.0" stroke="#FFFFFF" class="w-3 h-3" ::class="{'opacity-0': sheets.params.sort.value != 'size'}" fill="none" />
+                                File size
+                            </li>
+                        </ul>
+                        <small class="px-5 text-primary-400 font-medium">Order</small>
+                        <ul class="flex flex-col gap-1 text-primary-200 px-4 mb-4">
+                            <li class="hover:bg-amber-600 px-1 py-0.5 rounded cursor-pointer flex items-center gap-1" @click="sheets.params.sort.asc = true; retrieveUploadedSheets()">
+                                <x-svg.tick stroke-width="2.0" stroke="#FFFFFF" class="w-3 h-3" ::class="{'opacity-0': !sheets.params.sort.asc}" fill="none" />
+                                Ascending
+                            </li>
+                            <li class="hover:bg-amber-600 px-1 py-0.5 rounded cursor-pointer flex items-center gap-1" @click="sheets.params.sort.asc = false; retrieveUploadedSheets()">
+                                <x-svg.tick stroke-width="2.0" stroke="#FFFFFF" class="w-3 h-3" ::class="{'opacity-0': sheets.params.sort.asc}" fill="none" />
+                                Descending
+                            </li>
                         </ul>
                     </div>
                 </small>
@@ -30,10 +55,14 @@
                 </small>
             </div>
             <div class="mt-4">
-                here
+                <template x-for="sheet in sheets.list">
+                    <div>
+                        <small x-text="sheet.client_name"></small>
+                        <small x-text="sheet.created_at"></small>
+                    </div>
+                </template>
             </div>
         </div>
-
 
         <x-modal showVar="slides.sheets.show" title="Upload your new sheets">
             <x-slot:content>
@@ -74,16 +103,16 @@
 
     <script>
         const dashboard = (e) => ({
-            files: {
+            sheets: {
                 list: [],
                 params: {
                     filter: {
                         show: false,
-                        value: 'all'
+                        org: false
                     },
                     sort: {
                         show: false,
-                        value: 'modified',
+                        value: 'uploaded',
                         asc: true
                     }
                 }
@@ -99,12 +128,20 @@
                 }
             },
             init() {
-                this.retrieveUploadedFiles();
+                Promise.all(this.retrieveUploadedSheets());
             },
-            async retrieveUploadedFiles() {
-                const response = await fetch(route('uploads.index'));
+            async retrieveUploadedSheets() {
+                const {
+                    filter,
+                    sort
+                } = this.sheets.params
+                const response = await fetch(route('uploads.index', {
+                    filter: filter.org,
+                    sort: sort.value,
+                    sortAsc: sort.asc
+                }));
                 const json = await response.json();
-                this.files.list = json.data;
+                this.sheets.list = json.data;
             },
             onFilesAdded(el) {
                 for (const file of el.files) {
