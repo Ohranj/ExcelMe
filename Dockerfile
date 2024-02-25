@@ -41,9 +41,10 @@ RUN sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
 
 #Install node
-RUN curl -sL https://deb.nodesource.com/setup_16.x -o /tmp/nodesource_setup.sh
-RUN bash /tmp/nodesource_setup.sh
-RUN apt install nodejs npm -y
+# RUN curl -sL https://deb.nodesource.com/setup_16.x -o /tmp/nodesource_setup.sh
+# RUN bash /tmp/nodesource_setup.sh
+# RUN apt install nodejs npm -y
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - && apt-get install -y nodejs
 
 
 #Copy local folders to the root project folder

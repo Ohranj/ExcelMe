@@ -6,7 +6,7 @@ use App\Models\Upload;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UploadFile extends FormRequest
+class UploadFileRequest extends FormRequest
 {
     protected $stopOnFirstFailure = true;
 
@@ -27,7 +27,7 @@ class UploadFile extends FormRequest
     {
         return [
             'uploads' => ['required', 'array'],
-            'uploads.*' => ['extensions:ods,xlsx', 'max:512', function ($attribute, $value, $fail) {
+            'uploads.*' => ['extensions:ods,xlsx,json', 'max:512', function ($attribute, $value, $fail) {
                 $name = $value->getClientOriginalName();
                 $exists = Upload::whereBelongsTo(Auth::user())->where('client_name', $name)->exists();
                 if ($exists) {

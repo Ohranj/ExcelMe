@@ -55,12 +55,31 @@
                 </small>
             </div>
             <div class="mt-4">
-                <template x-for="sheet in sheets.list">
-                    <div>
-                        <small x-text="sheet.client_name"></small>
-                        <small x-text="sheet.created_at"></small>
+                <div class="shadow shadow-primary-700 rounded">
+                    <div class="grid grid-cols-7 gap-2 bg-primary-700 text-white p-1 rounded-t items-center font-semibold">
+                        <small class="col-span-2">File Name</small>
+                        <small class="col-span-2">Uploaded By</small>
+                        <small>Last Modified</small>
+                        <small>Created</small>
+                        <small class="text-center border-l">Actions</small>
                     </div>
-                </template>
+                    <template x-for="sheet in sheets.list">
+                        <div class="px-1 py-0.5 grid grid-cols-7 gap-2 items-center hover:bg-primary-300 rounded-b cursor-pointer">
+                            <small class="col-span-2" x-text="sheet.client_name"></small>
+                            <small class="col-span-2" x-text="sheet.user.forename + ' ' + sheet.user.surname"></small>
+                            <small x-text="sheet.updated_at_human"></small>
+                            <small x-text="sheet.created_at_human"></small>
+                            <div class="flex justify-center gap-8">
+                                <div class="shadow shadow-primary-700 rounded-full p-0.5 bg-primary-200">
+                                    <x-svg.info stroke-width="1.5" stroke="currentColor" class="w-6 h-6 cursor-pointer" fill="none" />
+                                </div>
+                                <div class="shadow shadow-primary-700 rounded-full p-0.5 bg-primary-200">
+                                    <x-svg.trash stroke-width="1.5" stroke="red" class="w-6 h-6 cursor-pointer" fill="none" />
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
             </div>
         </div>
 
@@ -128,7 +147,7 @@
                 }
             },
             init() {
-                Promise.all(this.retrieveUploadedSheets());
+                Promise.all([this.retrieveUploadedSheets()]);
             },
             async retrieveUploadedSheets() {
                 const {
@@ -186,6 +205,7 @@
                     this.slides.sheets.error.message = json.errors.message;
                     this.slides.sheets.error.show = true;
                 }
+                await this.retrieveUploadedSheets();
                 Alpine.store('toast').toggle(true, json.message);
             },
             ...e
