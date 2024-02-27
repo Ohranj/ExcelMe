@@ -1,4 +1,5 @@
 <x-app-layout>
+    @routes(['dashboard'])
     <div class="flex flex-col gap-12" x-data="dashboard({ csrfToken: '{{ csrf_token() }}' })">
         <button class="hover:bg-primary-900 text-white font-medium bg-primary-500 min-w-[125px] py-0.5 px-2 rounded-md ml-auto block" @click="slides.sheets.show = true">Upload</button>
         <div>
