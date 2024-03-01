@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
-    Route::resource('uploads', UploadController::class)->only(['store', 'index']);
+    Route::resource('uploads', UploadController::class)->only(['store', 'index', 'destroy']);
 });
 
 require __DIR__ . '/auth.php';

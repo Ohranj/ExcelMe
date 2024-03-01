@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Upload;
+use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Actions\Upload\CreateUpload;
-use App\Http\Requests\UploadFileRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Interfaces\FileUploadInterface;
+use App\Http\Requests\UploadFileRequest;
 
 class UploadController extends Controller
 {
@@ -26,6 +29,9 @@ class UploadController extends Controller
         return $this->returnJson(true, $data, 200);
     }
 
+    /**
+     * 
+     */
     public function store(UploadFileRequest $request, FileUploadInterface $fileUpload, CreateUpload $createUpload): JsonResponse
     {
         $files = $request->safe()->uploads;
@@ -76,5 +82,40 @@ class UploadController extends Controller
         ];
 
         return $this->returnJson(true, $data, 201);
+    }
+
+    /**
+     * 
+     */
+    public function destroy(Upload $upload, FileUploadInterface $fileUploadInterface): JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+            $storagePath = $upload->path;
+            $response = $upload->delete();
+
+            if (!$response) {
+                throw new Exception("An error occured in deleting the uplaod from the DB");
+            }
+
+            $response = $fileUploadInterface->delete($storagePath);
+
+            if (!$response) {
+                throw new Exception("An error occured in deleting the upload from storage");
+            }
+        } catch (Exception $e) {
+            Log::info(json_encode($e));
+            DB::rollback();
+            return $this->returnJson(false, [
+                'message' => 'An error occured. If this persists, please contact our team.'
+            ], 422);
+        }
+
+        DB::commit();
+
+        $data = ['message' => 'File removed'];
+
+        return $this->returnJson(true, $data, 203);
     }
 }
