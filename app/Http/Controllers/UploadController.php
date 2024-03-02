@@ -8,13 +8,11 @@ use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\ReadExcelSheetInfo;
 use Illuminate\Support\Facades\Log;
 use App\Actions\Upload\CreateUpload;
-use App\Helpers\ReadSheetInfo;
 use Illuminate\Support\Facades\Auth;
 use App\Interfaces\FileUploadInterface;
-use Maatwebsite\Excel\HeadingRowImport;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Http\Requests\UploadFileRequest;
 
 class UploadController extends Controller
@@ -45,22 +43,20 @@ class UploadController extends Controller
             $extension = $file->extension();
             $filePath = explode('.', $file->hashName())[0] . '.' . $extension;
 
-            $worksheetInfo = (new ReadSheetInfo())->listFirstSheetInfo($file, $extension);
+            if ($extension == 'ods' || $extension == 'xlsx') {
+                $sheetMetaData = new ReadExcelSheetInfo($file, $extension, 0);
+            } else {
+                dd('cant handle json yet');
+            }
 
-            $metaData = [
-                'headings' => (new HeadingRowImport())->toArray($file),
-                'totals' => [
-                    'columns' =>  $worksheetInfo['totalColumns'],
-                    'rows' =>  $worksheetInfo['totalRows']
-                ]
-            ];
+            $metaData = $sheetMetaData->columns()->totalRows()->totalCols();
 
             $params = [
                 'client_name' => $file->getClientOriginalName(),
                 'path' => $filePath,
                 'extension' => $extension,
                 'user_id' => Auth::id(),
-                'meta_data' => json_encode($metaData),
+                'meta_data' => json_encode($metaData->meta),
                 'created_at' => now(),
                 'updated_at' => now()
             ];
