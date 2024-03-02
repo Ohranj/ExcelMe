@@ -12,8 +12,12 @@ class Upload extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $casts = [
+        'meta_data' => 'array',
+    ];
+
     protected $fillable = [
-        'user_id', 'name', 'extension', 'path'
+        'user_id', 'name', 'extension', 'path', 'meta_data'
     ];
 
     protected $appends = ['updated_at_human', 'created_at_human'];

@@ -58,17 +58,19 @@
             <template x-if="sheets.list.length">
                 <div class="mt-4">
                     <div class="shadow shadow-primary-700 rounded">
-                        <div class="grid grid-cols-7 gap-2 bg-primary-700 text-white p-1 rounded-t items-center font-semibold">
+                        <div class="grid grid-cols-8 gap-2 bg-primary-700 text-white p-1 rounded-t items-center font-semibold">
                             <small class="col-span-2">File Name</small>
                             <small class="col-span-2">Uploaded By</small>
+                            <small>Total Rows</small>
                             <small>Last Modified</small>
                             <small>Created</small>
                             <small class="text-center border-l">Actions</small>
                         </div>
                         <template x-for="sheet in sheets.list">
-                            <div class="px-1 py-0.5 grid grid-cols-7 gap-2 items-center hover:bg-primary-300 rounded-b cursor-pointer">
+                            <div class="px-1 py-0.5 grid grid-cols-8 gap-2 items-center hover:bg-primary-300 rounded-b cursor-pointer">
                                 <small class="col-span-2" x-text="sheet.client_name"></small>
                                 <small class="col-span-2" x-text="sheet.user.forename + ' ' + sheet.user.surname"></small>
+                                <small x-text="sheet.meta_data.totals.rows"></small>
                                 <small x-text="sheet.updated_at_human"></small>
                                 <small x-text="sheet.created_at_human"></small>
                                 <div class="flex justify-center gap-8">

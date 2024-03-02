@@ -32,7 +32,8 @@ RUN docker-php-ext-install \
     exif \
     bcmath \
     gd \
-    mbstring
+    mbstring \
+    zip
 
 # RUN pecl install redis
 

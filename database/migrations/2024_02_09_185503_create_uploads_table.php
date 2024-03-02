@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('client_name');
             $table->string('extension');
             $table->string('path');
+            $table->json('meta_data')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
