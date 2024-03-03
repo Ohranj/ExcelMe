@@ -14,7 +14,7 @@ class ReadJsonSheetInfo implements FileMetaInterface
         'totals' => [
             'rows' => 0,
             'cols' => 0
-        ]
+        ],
     ];
 
     /**
@@ -24,13 +24,13 @@ class ReadJsonSheetInfo implements FileMetaInterface
     {
         $this->file = $file;
         $this->extension = $extension;
-        $this->json = $this->instantiateJsonContent();
+        $this->json = $this->accessJsonContent();
     }
 
     /**
      * 
      */
-    public function instantiateJsonContent(): array
+    private function accessJsonContent(): array
     {
         $fileContent = file_get_contents($this->file);
         return json_decode($fileContent, true);

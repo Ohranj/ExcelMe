@@ -76,7 +76,7 @@
                                 <small x-text="sheet.updated_at_human"></small>
                                 <small x-text="sheet.created_at_human"></small>
                                 <div class="flex justify-center gap-8">
-                                    <div class="shadow shadow-primary-700 rounded-full p-0.5 bg-primary-200">
+                                    <div class="shadow shadow-primary-700 rounded-full p-0.5 bg-primary-200" @click="slides.meta.sheet = sheet; slides.meta.show = true">
                                         <x-svg.info stroke-width="1.5" stroke="currentColor" class="w-6 h-6 cursor-pointer" fill="none" />
                                     </div>
                                     <div class="shadow shadow-primary-700 rounded-full p-0.5 bg-primary-200" @click="slides.delete.sheet = sheet; slides.delete.show = true">
@@ -135,15 +135,39 @@
         <x-modal showVar="slides.delete.show" title="Are you sure?">
             <x-slot:content>
                 <div class="p-2 flex flex-col gap-8">
-                    <p>You are about to delete the following sheet. Please be aware that the action is not reversable:</p>
+                    <p>You are about to delete the following sheet. Please be aware that this action is not reversable:</p>
                     <ul class="p-0">
                         <li><span class="w-[125px] inline-block">Sheet: </span><span x-text="slides.delete.sheet.client_name"></span></li>
                         <li><span class="w-[125px] inline-block">Last Modified: </span><span x-text="slides.delete.sheet.updated_at_human"></span></li>
                     </ul>
-                    <button class="hover:bg-primary-900 text-white font-medium bg-primary-500 min-w-[125px] py-0.5 px-2 rounded-md self-center" @click="confirmDeleteBtnPressed">Confirm</button>
+                    <button class="hover:bg-red-500 hover:text-white font-medium bg-red-100 border border-red-500 text-red-500 min-w-[125px] py-0.5 px-2 rounded-md self-center" @click="confirmDeleteBtnPressed">Confirm</button>
                 </div>
             </x-slot:content>
         </x-modal>
+
+        <x-slide showVar="slides.meta.show" title="Sheet history and meta data" subTitle="View the historic changes applied to the sheet and it's meta data">
+            <x-slot name="content">
+                <div class="flex justify-end gap-4">
+                    <button class="hover:bg-secondary-400 hover:text-white font-medium bg-secondary-100 border border-secondary-500 text-secondary-500 min-w-[125px] py-0.5 px-2 rounded-md">Export Original</button>
+                    <button class="hover:bg-blue-400 hover:text-white font-medium bg-blue-100 border border-blue-500 text-blue-500 min-w-[125px] py-0.5 px-2 rounded-md">Export sheet</button>
+                </div>
+                <div>
+                    <div class="flex items-center gap-4">
+                        <div class="border-b border-dashed grow border-primary-400"></div>
+                        <h1>Column Headers</h1>
+                        <div class="border-b border-dashed grow border-primary-400"></div>
+                    </div>
+                    <div class="mt-4">
+                        <small x-text="slides.meta.sheet.meta_data?.headings.join(' / ')"></small>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="border-b border-dashed grow border-primary-400"></div>
+                    <h1>Activity</h1>
+                    <div class="border-b border-dashed grow border-primary-400"></div>
+                </div>
+            </x-slot>
+        </x-slide>
     </div>
 
     <script>
@@ -172,6 +196,10 @@
                     }
                 },
                 delete: {
+                    show: false,
+                    sheet: {}
+                },
+                meta: {
                     show: false,
                     sheet: {}
                 }

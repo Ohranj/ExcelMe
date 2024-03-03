@@ -33,7 +33,7 @@ class ReadExcelSheetInfo implements FileMetaInterface
     /**
      * 
      */
-    public function instantiateReader(): IReader
+    private function instantiateReader(): IReader
     {
         return IOFactory::createReader(ucfirst($this->extension));
     }
@@ -43,7 +43,7 @@ class ReadExcelSheetInfo implements FileMetaInterface
      */
     public function headings()
     {
-        $this->meta['headings'] = (new HeadingRowImport())->toArray($this->file);
+        $this->meta['headings'] = (new HeadingRowImport())->toCollection($this->file)->flatten();
         return $this;
     }
 
