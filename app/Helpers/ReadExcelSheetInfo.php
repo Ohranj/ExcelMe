@@ -41,7 +41,7 @@ class ReadExcelSheetInfo implements FileMetaInterface
     /**
      * 
      */
-    public function columns()
+    public function headings()
     {
         $this->meta['headings'] = (new HeadingRowImport())->toArray($this->file);
         return $this;

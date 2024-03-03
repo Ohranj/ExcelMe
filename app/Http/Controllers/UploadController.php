@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Helpers\ReadExcelSheetInfo;
 use Illuminate\Support\Facades\Log;
 use App\Actions\Upload\CreateUpload;
+use App\Helpers\ReadJsonSheetInfo;
 use Illuminate\Support\Facades\Auth;
 use App\Interfaces\FileUploadInterface;
 use App\Http\Requests\UploadFileRequest;
@@ -43,13 +44,11 @@ class UploadController extends Controller
             $extension = $file->extension();
             $filePath = explode('.', $file->hashName())[0] . '.' . $extension;
 
-            if ($extension == 'ods' || $extension == 'xlsx') {
-                $sheetMetaData = new ReadExcelSheetInfo($file, $extension, 0);
-            } else {
-                dd('cant handle json yet');
-            }
+            $sheetMetaData = in_array($extension, ['ods', 'xlsx', 'csv'])
+                ? new ReadExcelSheetInfo($file, $extension, 0)
+                : new ReadJsonSheetInfo($file, $extension);
 
-            $metaData = $sheetMetaData->columns()->totalRows()->totalCols();
+            $metaData = $sheetMetaData->headings()->totalRows()->totalCols();
 
             $params = [
                 'client_name' => $file->getClientOriginalName(),
