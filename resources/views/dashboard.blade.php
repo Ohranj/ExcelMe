@@ -19,7 +19,7 @@
                         </ul>
                     </div>
                 </small>
-                <small class="text-primary-600 flex items-center gap-1 relative">Sort: <span class="cursor-pointer text-primary-900" @click="sheets.params.sort.show = true">Date uploaded</span>
+                <small class="text-primary-600 flex items-center gap-1 relative">Sort: <span class="cursor-pointer text-primary-900" @click="sheets.params.sort.show = true" x-text="sheets.params.sort.value == 'alphabetical' ? 'Alphabetical' : sheets.params.sort.value == 'uploaded' ? 'Date uploaded' : 'File size'">Date uploaded</span>
                     <x-svg.chevron fill="none" stroke-width="2.5" stroke="currentColor" class="w-3 h-3" />
                     <div x-cloak x-show="sheets.params.sort.show" x-collapse class="bg-primary-700 rounded absolute top-6 min-w-[175px]" @click.away="sheets.params.sort.show = false">
                         <small class="px-5 text-primary-400 font-medium mt-4 block">Sort by</small>
@@ -250,7 +250,6 @@
                     Alpine.store('toast').toggle(false, json.message);
                     return;
                 }
-
                 for (let i = this.slides.sheets.toUpload.length - 1; i >= 0; i--) {
                     const file = this.slides.sheets.toUpload[i];
                     const item = json.errors.files.findIndex((x) => x == file.name);
@@ -258,7 +257,6 @@
                         this.slides.sheets.toUpload.splice(i, 1);
                     }
                 }
-
                 if (json.errors.files.length) {
                     this.slides.sheets.error.message = json.errors.message;
                     this.slides.sheets.error.show = true;
