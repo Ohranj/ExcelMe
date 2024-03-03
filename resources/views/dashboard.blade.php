@@ -4,7 +4,7 @@
         <button class="hover:bg-primary-900 text-white font-medium bg-primary-500 min-w-[125px] py-0.5 px-2 rounded-md ml-auto block" @click="slides.sheets.show = true">Upload</button>
         <div>
             <div class="flex items-center gap-8">
-                <small class="grow text-primary-600 flex items-center gap-1 relative">Filter: <span class="cursor-pointer text-primary-900" @click="sheets.params.filter.show = true">All Sheets</span>
+                <small class="grow text-primary-600 flex items-center gap-1 relative">Filter: <span class="cursor-pointer text-primary-900" @click="sheets.params.filter.show = true" x-text="sheets.params.filter.org ? 'My Organisation' : 'All Sheets'">All Sheets</span>
                     <x-svg.chevron fill="none" stroke-width="2.5" stroke="currentColor" class="w-3 h-3" />
                     <div x-cloak x-show="sheets.params.filter.show" x-collapse class="bg-primary-700 rounded absolute top-6 min-w-[175px]" @click.away="sheets.params.filter.show = false">
                         <small class="px-5 text-primary-400 font-medium mt-4 block">Sort by</small>
@@ -19,7 +19,7 @@
                         </ul>
                     </div>
                 </small>
-                <small class="text-primary-600 flex items-center gap-1 relative">Sort: <span class="cursor-pointer text-primary-900" @click="sheets.params.sort.show = true" x-text="sheets.params.sort.value == 'alphabetical' ? 'Alphabetical' : sheets.params.sort.value == 'uploaded' ? 'Date uploaded' : 'File size'">Date uploaded</span>
+                <small class="text-primary-600 flex items-center gap-1 relative min-w-[145px]">Sort: <span class="cursor-pointer text-primary-900" @click="sheets.params.sort.show = true" x-text="sheets.params.sort.value == 'alphabetical' ? 'Alphabetical' : sheets.params.sort.value == 'uploaded' ? 'Date uploaded' : 'File size'">Date uploaded</span>
                     <x-svg.chevron fill="none" stroke-width="2.5" stroke="currentColor" class="w-3 h-3" />
                     <div x-cloak x-show="sheets.params.sort.show" x-collapse class="bg-primary-700 rounded absolute top-6 min-w-[175px]" @click.away="sheets.params.sort.show = false">
                         <small class="px-5 text-primary-400 font-medium mt-4 block">Sort by</small>
