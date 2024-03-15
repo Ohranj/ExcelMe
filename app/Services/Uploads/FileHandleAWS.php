@@ -17,7 +17,7 @@ class FileHandleAWS implements FileUploadInterface
         return false;
     }
 
-    public function downloadJson($upload)
+    public function downloadFile($upload)
     {
         //
     }

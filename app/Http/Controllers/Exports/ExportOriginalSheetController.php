@@ -14,11 +14,6 @@ class ExportOriginalSheetController extends Controller
      */
     public function __invoke(Request $request, FileUploadInterface $fileUpload, Upload $upload)
     {
-        if ($upload->extension != 'json') {
-            dd('excel');
-            return;
-        }
-
-        return $fileUpload->downloadJson($upload);
+        return $fileUpload->downloadFile($upload);
     }
 }
