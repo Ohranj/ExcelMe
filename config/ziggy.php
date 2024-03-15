@@ -1,7 +1,7 @@
 <?php
 return [
     'groups' => [
-        'dashboard' => ['dashboard', 'uploads.*', 'logout'],
-        'welcome' => ['dashboard', 'login.store', 'register.store']
+        'welcome' => ['dashboard', 'login.store', 'register.store'],
+        'dashboard' => ['dashboard', 'uploads.*', 'logout', 'export_original_sheet']
     ]
 ];

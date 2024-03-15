@@ -148,8 +148,8 @@
         <x-slide showVar="slides.meta.show" title="Sheet history and meta data" subTitle="View the historic changes applied to the sheet and it's meta data">
             <x-slot name="content">
                 <div class="flex justify-end gap-4">
-                    <button class="hover:bg-secondary-400 hover:text-white font-medium bg-secondary-100 border border-secondary-500 text-secondary-500 min-w-[125px] py-0.5 px-2 rounded-md">Export Original</button>
-                    <button class="hover:bg-blue-400 hover:text-white font-medium bg-blue-100 border border-blue-500 text-blue-500 min-w-[125px] py-0.5 px-2 rounded-md">Export sheet</button>
+                    <a :href="route('export_original_sheet', {upload: slides.meta.sheet.id || 0})" class="hover:bg-secondary-400 hover:text-white font-medium bg-secondary-100 border border-secondary-500 text-secondary-500 min-w-[125px] py-0.5 px-2 rounded-md">Export Original</a>
+                    <a href="/" class="hover:bg-blue-400 hover:text-white font-medium bg-blue-100 border border-blue-500 text-blue-500 min-w-[125px] py-0.5 px-2 rounded-md">Export Current</a>
                 </div>
                 <div>
                     <div class="flex items-center gap-4">
@@ -158,7 +158,7 @@
                         <div class="border-b border-dashed grow border-primary-400"></div>
                     </div>
                     <div class="mt-4">
-                        <small x-text="slides.meta.sheet.meta_data?.headings.join(' / ')"></small>
+                        <small x-text="slides.meta.sheet.meta_data?.headings.join(' | ')"></small>
                     </div>
                 </div>
                 <div class="flex items-center gap-4">

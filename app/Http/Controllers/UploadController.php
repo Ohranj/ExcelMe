@@ -42,7 +42,7 @@ class UploadController extends Controller
         $errors = [];
         foreach ($files as $file) {
             $extension = $file->extension();
-            $filePath = explode('.', $file->hashName())[0] . '.' . $extension;
+            $filePath = Auth::id() . '/original/' . explode('.', $file->hashName())[0] . '.' . $extension;
 
             $sheetMetaData = in_array($extension, ['ods', 'xlsx', 'csv'])
                 ? new ReadExcelSheetInfo($file, $extension, 0)

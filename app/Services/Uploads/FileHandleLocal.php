@@ -16,4 +16,9 @@ class FileHandleLocal implements FileUploadInterface
     {
         return Storage::delete($path);
     }
+
+    public function downloadJson($upload)
+    {
+        return Storage::download($upload->path, $upload->client_name);
+    }
 }

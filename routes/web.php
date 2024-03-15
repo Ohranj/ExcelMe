@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Exports\ExportOriginalSheetController;
 use App\Http\Controllers\UploadController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,10 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
     Route::resource('uploads', UploadController::class)->only(['store', 'index', 'destroy']);
+
+    Route::group(['prefix' => 'export'], function () {
+        Route::get('/sheet/uploads/{upload}/original', ExportOriginalSheetController::class)->name('export_original_sheet');
+    });
 });
 
 require __DIR__ . '/auth.php';
