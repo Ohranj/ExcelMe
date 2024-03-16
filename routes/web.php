@@ -19,8 +19,11 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
     Route::resource('uploads', UploadController::class)->only(['store', 'index', 'destroy']);
 
-    Route::group(['prefix' => 'export'], function () {
-        Route::get('/sheet/uploads/{upload}/original', ExportOriginalSheetController::class)->name('export_original_sheet');
+    Route::group([
+        'prefix' => 'export',
+        'middleware' => ['can:view,upload']
+    ], function () {
+        Route::get('uploads/{upload}/original', ExportOriginalSheetController::class)->name('export_original_sheet');
     });
 });
 

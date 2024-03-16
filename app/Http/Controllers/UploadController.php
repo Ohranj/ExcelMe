@@ -96,8 +96,15 @@ class UploadController extends Controller
     /**
      * 
      */
-    public function destroy(Upload $upload, FileUploadInterface $fileUploadInterface): JsonResponse
+    public function destroy(Request $request, Upload $upload, FileUploadInterface $fileUploadInterface): JsonResponse
     {
+        $isAuthorised = $request->user()->can('delete', $upload);
+        if (!$isAuthorised) {
+            return $this->returnJson(false, [
+                'message' => 'We are unable to validate with this action'
+            ], 403);
+        }
+
         DB::beginTransaction();
 
         try {
