@@ -32,6 +32,8 @@ class UploadPolicy
      */
     public function delete(User $user, Upload $upload): bool
     {
+        //Todo - expand for organisations | captains only delete
+        //User links to an organisation, if that user also links to a captain
         $isUploader = Upload::where('id', $upload->id)->whereBelongsTo($user, 'user')->exists();
         return $isUploader;
     }

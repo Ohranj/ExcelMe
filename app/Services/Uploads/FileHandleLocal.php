@@ -21,4 +21,9 @@ class FileHandleLocal implements FileUploadInterface
     {
         return Storage::download($upload->path, $upload->client_name);
     }
+
+    public function deleteAllFiles(): void
+    {
+        Storage::deleteDirectory('');
+    }
 }

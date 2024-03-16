@@ -21,4 +21,9 @@ class FileHandleAWS implements FileUploadInterface
     {
         //
     }
+
+    public function deleteAllFiles(): void
+    {
+        //
+    }
 }

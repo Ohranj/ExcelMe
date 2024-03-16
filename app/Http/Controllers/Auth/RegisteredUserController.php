@@ -31,7 +31,6 @@ class RegisteredUserController extends Controller
 
         $setOrganisation = $request->shouldSetOrganisation();
 
-
         DB::beginTransaction();
 
         try {
