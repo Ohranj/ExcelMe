@@ -17,12 +17,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
-    Route::resource('uploads', UploadController::class)->only(['store', 'index', 'destroy']);
+    Route::resource('uploads', UploadController::class)->only(['store', 'index', 'destroy', 'show', 'edit']);
 
-    Route::group([
-        'prefix' => 'export',
-        'middleware' => ['can:view,upload']
-    ], function () {
+    Route::group(['prefix' => 'export', 'middleware' => ['can:view,upload']], function () {
         Route::get('uploads/{upload}/original', ExportOriginalSheetController::class)->name('export_original_sheet');
     });
 });
