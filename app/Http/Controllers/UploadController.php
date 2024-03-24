@@ -7,11 +7,11 @@ use App\Models\Upload;
 use Illuminate\Http\Request;
 use App\Traits\ResponseTrait;
 use Illuminate\Http\JsonResponse;
+use App\Helpers\ReadJsonSheetInfo;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\ReadExcelSheetInfo;
 use Illuminate\Support\Facades\Log;
 use App\Actions\Upload\CreateUpload;
-use App\Helpers\ReadJsonSheetInfo;
 use Illuminate\Support\Facades\Auth;
 use App\Interfaces\FileUploadInterface;
 use App\Http\Requests\UploadFileRequest;
@@ -133,5 +133,77 @@ class UploadController extends Controller
         $data = ['message' => 'File removed'];
 
         return $this->returnJson(true, $data, 203);
+    }
+
+    /**
+     * 
+     */
+    public function show(Request $request, Upload $upload)
+    {
+        $isAuthorised = $request->user()->can('view', $upload);
+        if (!$isAuthorised) {
+            return abort(403, 'We are unable to fulfill this request');
+        }
+
+        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Ods();
+
+        ['disks' => $disks, 'default' => $default] = config('filesystems');
+
+        $filePath = $disks[$default]['root'] . '/' . $upload->path;
+
+        $sheet = $reader->load($filePath)->getActiveSheet();
+
+        return view('sheet', [
+            'upload' => $upload->id,
+            'sheet' => [
+                'name' => $sheet->getTitle(),
+            ]
+        ]);
+    }
+
+    /**
+     * 
+     */
+    public function edit(Request $request, Upload $upload)
+    {
+        $isAuthorised = $request->user()->can('view', $upload);
+        if (!$isAuthorised) {
+            return abort(403, 'We are unable to fulfill this request');
+        }
+
+        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Ods();
+
+        ['disks' => $disks, 'default' => $default] = config('filesystems');
+
+        $filePath = $disks[$default]['root'] . '/' . $upload->path;
+
+        $sheet = $reader->load($filePath)->getActiveSheet();
+
+        //$maxDataRow = $sheet->getHighestDataRow();
+        $maxDataColumn = $sheet->getHighestDataColumn();
+
+        $columns = $sheet->rangeToArray("A1:{$maxDataColumn}1")[0];
+
+        //Check if has a header row?
+
+        $rows = $sheet->rangeToArray("A2:{$maxDataColumn}100");
+        $dataTable = [];
+        foreach ($rows as $key => $row) {
+            $rowNotNullCells = array_filter($row, fn ($cell) => $cell != null);
+            if (!count($rowNotNullCells)) {
+                continue;
+            }
+
+            $dataTable[] = $row;
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Sheet data retrieved',
+            'data' => [
+                'columns' => $columns,
+                'chunkedRows' => $dataTable
+            ]
+        ]);
     }
 }

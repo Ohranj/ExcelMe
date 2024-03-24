@@ -21,6 +21,7 @@ class RemoveStorageFilesOnMigrateRefresh
      */
     public function handle(CommandFinished $command): void
     {
+        //Todo: fix permission owner issues when running on prod
         if ($command->command == 'migrate:fresh') {
             $fileProvider = App::make(FileUploadInterface::class);
             $fileProvider->deleteAllFiles();

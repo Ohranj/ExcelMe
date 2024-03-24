@@ -68,7 +68,7 @@
                             <small class="text-center border-l">Actions</small>
                         </div>
                         <template x-for="sheet in sheets.list">
-                            <div class="px-1 py-0.5 grid grid-cols-9 gap-2 items-center hover:bg-primary-300 rounded-b cursor-pointer">
+                            <div class="px-1 py-0.5 grid grid-cols-9 gap-2 items-center hover:bg-primary-300 rounded-b cursor-pointer" @click="location.href=route('uploads.show', {upload: sheet.id})">
                                 <small class="col-span-2" x-text="sheet.client_name"></small>
                                 <small class="col-span-2" x-text="sheet.user.forename + ' ' + sheet.user.surname"></small>
                                 <small x-text="sheet.meta_data.totals.rows"></small>
@@ -76,10 +76,10 @@
                                 <small x-text="sheet.updated_at_human"></small>
                                 <small x-text="sheet.created_at_human"></small>
                                 <div class="flex justify-center gap-8">
-                                    <div class="shadow shadow-primary-700 rounded-full p-0.5 bg-primary-200" @click="slides.meta.sheet = sheet; slides.meta.show = true">
+                                    <div class="shadow shadow-primary-700 rounded-full p-0.5 bg-primary-200" @click.stop="slides.meta.sheet = sheet; slides.meta.show = true">
                                         <x-svg.info stroke-width="1.5" stroke="currentColor" class="w-6 h-6 cursor-pointer" fill="none" />
                                     </div>
-                                    <div class="shadow shadow-primary-700 rounded-full p-0.5 bg-primary-200" @click="slides.delete.sheet = sheet; slides.delete.show = true">
+                                    <div class="shadow shadow-primary-700 rounded-full p-0.5 bg-primary-200" @click.stop="slides.delete.sheet = sheet; slides.delete.show = true">
                                         <x-svg.trash stroke-width="1.5" stroke="red" class="w-6 h-6 cursor-pointer" fill="none" />
                                     </div>
                                 </div>
