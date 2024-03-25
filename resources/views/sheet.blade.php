@@ -12,7 +12,7 @@
                             <li>Total Rows: {{ $sheet['totalRows'] }}</li>
                         </ul>
                     </div>
-                    <div>
+                    <div class="flex gap-2 items-center">
                         <button class="bg-secondary-600 text-white w-[105px] rounded-md py-0.5">Export</button>
                         <button class="bg-primary-600 text-white w-[105px] rounded-md py-0.5">Configure</button>
                     </div>
@@ -23,7 +23,7 @@
                 <option value="1000">Show chunks of 1000 results</option>
                 <option value="2500">Show chunks of 2500 results</option>
                 <option value="5000">Show chunks of 5000 results</option>
-                <option value="0">Show All</option>
+                <option :value="{{ $sheet['totalRows'] }}">Show All</option>
             </select>
             <div x-cloak x-show="!sheet.loading.initialRender">
                 <div class="border rounded shadow">
@@ -40,14 +40,11 @@
                         </div>
                     </template>
                 </div>
-
-                <button class="bg-blue-500 text-white rounded-md mt-4 w-[105px] py-0.5 mx-auto block" @click="sheet.fetchRows.start = sheet.fetchRows.end + 1; sheet.fetchRows.end *= 2; retrieveUpload()">Load More</button>
+                <button :disabled="sheet.fetchRows.end >= {{ $sheet['totalRows'] }}" class="text-white rounded-md mt-4 w-[105px] py-0.5 mx-auto block" :class="sheet.fetchRows.end >= {{ $sheet['totalRows'] }} ? 'bg-primary-400' : 'bg-blue-500'" @click="sheet.fetchRows.start = sheet.fetchRows.end + 1; sheet.fetchRows.end *= 2; retrieveUpload()">Load More</button>
             </div>
-            <template x-if="sheet.loading.processing">
-                <div class="grid justify-center gap-4 fixed top-[50%] left-0 right-0">
-                    <x-svg.spinner class="mx-auto w-16 h-16 animate-spin text-amber-500" fill="none" />
-                </div>
-            </template>
+            <div x-show="sheet.loading.processing" x-transition:leave.opacity.duration.750ms class="grid justify-center gap-4 fixed top-[50%] left-0 right-0">
+                <x-svg.spinner class="mx-auto w-16 h-16 animate-spin text-amber-500" fill="none" />
+            </div>
         </div>
     </div>
 
