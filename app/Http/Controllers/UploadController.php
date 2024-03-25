@@ -145,6 +145,7 @@ class UploadController extends Controller
             return abort(403, 'We are unable to fulfill this request');
         }
 
+        //DETERMINE THE TYPE
         $reader = new \PhpOffice\PhpSpreadsheet\Reader\Ods();
 
         ['disks' => $disks, 'default' => $default] = config('filesystems');
@@ -173,6 +174,7 @@ class UploadController extends Controller
             return abort(403, 'We are unable to fulfill this request');
         }
 
+        //DETERMINE THE TYPE
         $reader = new \PhpOffice\PhpSpreadsheet\Reader\Ods();
 
         ['disks' => $disks, 'default' => $default] = config('filesystems');
@@ -182,8 +184,6 @@ class UploadController extends Controller
         $sheet = $reader->load($filePath)->getActiveSheet();
 
         $maxDataColumn = $sheet->getHighestDataColumn();
-
-        $columns = $sheet->rangeToArray("A1:{$maxDataColumn}1")[0];
 
         //Check if has a header row?
 
@@ -202,7 +202,7 @@ class UploadController extends Controller
             'success' => true,
             'message' => 'Sheet data retrieved',
             'data' => [
-                'columns' => $columns,
+                'columns' => $sheet->rangeToArray("A1:{$maxDataColumn}1")[0],
                 'chunkedRows' => $dataTable
             ]
         ]);
