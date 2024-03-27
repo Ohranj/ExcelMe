@@ -1,6 +1,6 @@
 <x-app-layout>
     @routes(['dashboard'])
-    <div x-data="sheet({ upload: '{{ $upload }}' })">
+    <div x-data="sheet({ upload: '{{ $upload }}', totalRows: '{{ $sheet['totalRows'] }}' })">
         <div class="flex flex-col gap-4">
             <div>
                 <h1 class="capitalize text-3xl tracking-wide"> {{ $sheet['name'] }}</h1>
@@ -23,6 +23,7 @@
                 <option value="1000">Show chunks of 1000 results</option>
                 <option value="2500">Show chunks of 2500 results</option>
                 <option value="5000">Show chunks of 5000 results</option>
+                <option value="10000">Show chunks of 10000 results</option>
                 <option :value="{{ $sheet['totalRows'] }}">Show All</option>
             </select>
             <div x-cloak x-show="!sheet.loading.initialRender">
@@ -40,7 +41,7 @@
                         </div>
                     </template>
                 </div>
-                <button :disabled="sheet.fetchRows.end >= {{ $sheet['totalRows'] }}" class="text-white rounded-md mt-4 w-[105px] py-0.5 mx-auto block" :class="sheet.fetchRows.end >= {{ $sheet['totalRows'] }} ? 'bg-primary-400' : 'bg-blue-500'" @click="sheet.fetchRows.start = sheet.fetchRows.end + 1; sheet.fetchRows.end *= 2; retrieveUpload()">Load More</button>
+                <small class="opacity-0" x-ref="observer">Load More</small>
             </div>
             <div x-show="sheet.loading.processing" x-transition:leave.opacity.duration.750ms class="grid justify-center gap-4 fixed top-[50%] left-0 right-0">
                 <x-svg.spinner class="mx-auto w-16 h-16 animate-spin text-amber-500" fill="none" />
@@ -49,7 +50,7 @@
     </div>
 
     <script>
-        const sheet = () => ({
+        const sheet = (e) => ({
             urlParams: {},
             sheet: {
                 rows: [],
@@ -67,6 +68,7 @@
                 this.urlParams = route().params;
                 await this.retrieveUpload();
                 this.sheet.loading.initialRender = false;
+                this.observeTableBottom()
             },
             async retrieveUpload() {
                 this.sheet.loading.processing = true;
@@ -79,7 +81,30 @@
                 this.sheet.columns = json.data.columns;
                 this.sheet.rows = this.sheet.rows.concat(json.data.chunkedRows);
                 this.sheet.loading.processing = false;
-            }
+            },
+            observeTableBottom() {
+                const options = {
+                    root: null,
+                    rootMargin: '0px',
+                    threshold: 0.25
+                };
+
+                const observer = new IntersectionObserver((entries, observer) => {
+                    if (this.sheet.fetchRows.end >= e.totalRows) {
+                        return
+                    }
+
+                    if (!entries.some((x) => x.isIntersecting)) {
+                        return;
+                    }
+
+                    this.sheet.fetchRows.start = this.sheet.fetchRows.end + 1;
+                    this.sheet.fetchRows.end *= 2;
+                    this.retrieveUpload()
+                }, options);
+                observer.observe(this.$refs.observer);
+            },
+            ...e
         })
     </script>
 </x-app-layout>
